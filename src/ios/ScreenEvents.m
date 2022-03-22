@@ -24,6 +24,7 @@
         int result = notify_get_state(self->_notifyToken, &state);
         if (result == NOTIFY_STATUS_OK) {
             NSString *screenStatus = nil;
+            NSLog(@"ScreenEvent %llu' %c ", state, self->_notifyToken);
             if (state == 0) {
                 screenStatus = @"SCREEN_TURNED_ON";
             } else {
@@ -34,6 +35,8 @@
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[NSString stringWithFormat:@"Result returned result: %d", result]];
         }
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        
+        notify_cancel(self->_notifyToken);
     });
     if (status != NOTIFY_STATUS_OK) {
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[NSString stringWithFormat:@"Result returned status: %d", status]];
