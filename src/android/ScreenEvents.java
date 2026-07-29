@@ -29,6 +29,12 @@ public class ScreenEvents extends CordovaPlugin {
             if (Intent.ACTION_SCREEN_ON.equals(action)) {
                 ScreenEvents.this.callbackContext.success(SCREEN_TURNED_ON);
                 activity.unregisterReceiver(this);
+            } else if (Intent.ACTION_USER_PRESENT.equals(action)) {
+                // odemceni telefonu; hlasime jako SCREEN_TURNED_ON, aby JS strana nepotrebovala
+                // novy stav - pro automaticky mod je odemceni presnejsi signal "uzivatel vzal
+                // telefon do ruky" nez samotne rozsviceni displeje
+                ScreenEvents.this.callbackContext.success(SCREEN_TURNED_ON);
+                activity.unregisterReceiver(this);
             } else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
                 ScreenEvents.this.callbackContext.success(SCREEN_TURNED_OFF);
                 activity.unregisterReceiver(this);
@@ -66,6 +72,7 @@ public class ScreenEvents extends CordovaPlugin {
     private void listenerInit() {
         IntentFilter intentFilter = new IntentFilter(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        intentFilter.addAction(Intent.ACTION_USER_PRESENT);
         mReceiver = new ScreenStateReceiver();
         activity.registerReceiver(mReceiver, intentFilter);
     }
